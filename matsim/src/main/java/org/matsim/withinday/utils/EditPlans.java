@@ -272,33 +272,37 @@ public final class EditPlans {
 	public int findIndexOfRealActAfter(MobsimAgent agent, int index) {
 		Plan plan = WithinDayAgentUtils.getModifiablePlan(agent) ;
 		List<PlanElement> planElements = plan.getPlanElements() ;
-
-		int theIndex = -1 ;
-		for ( int ii=planElements.size()-1 ; ii>index; ii-- ) {
+		for ( int ii = index ; ii < planElements.size(); ii++ ) {
 			if ( planElements.get(ii) instanceof Activity ) {
 				Activity act = (Activity) planElements.get(ii) ;
 				if ( !StageActivityTypeIdentifier.isStageActivity( act.getType() ) ) {
-					theIndex = ii ;
+					return ii;
 				}
 			}
 		}
-		return theIndex ;
+		return -1;
 	}
+
+	public int findIndexOfRealActBefore(MobsimAgent agent, int index) {
+		Plan plan = WithinDayAgentUtils.getModifiablePlan(agent) ;
+		List<PlanElement> planElements = plan.getPlanElements() ;
+		for ( int ii = index - 1 ; ii >= 0 ; ii-- ) {
+			if ( planElements.get(ii) instanceof Activity ) {
+				Activity act = (Activity) planElements.get(ii) ;
+				if ( !StageActivityTypeIdentifier.isStageActivity( act.getType() ) ) {
+					return ii ;
+				}
+			}
+		}
+		return -1;
+	}
+
 	public Activity findRealActBefore(MobsimAgent agent, int index) {
 		Plan plan = WithinDayAgentUtils.getModifiablePlan(agent) ;
 		List<PlanElement> planElements = plan.getPlanElements() ;
-
-		Activity prevAct = null ;
-		for ( int ii=0 ; ii<index ; ii++ ) {
-			if ( planElements.get(ii) instanceof Activity ) {
-				Activity act = (Activity) planElements.get(ii) ;
-				if ( !StageActivityTypeIdentifier.isStageActivity( act.getType() ) ) {
-					prevAct = act ;
-				}
-			}
-		}
-		return prevAct;
+		return (Activity) planElements.get( findIndexOfRealActBefore(agent, index) ) ;
 	}
+
 	//	private Facility asFacility(Activity activity) {
 	//		Facility hereFacility = new ActivityWrapperFacility( activity ) ;
 	//		if ( activity.getFacilityId()!=null ) {
